@@ -20,7 +20,7 @@ export const createTask = async (req, res) => {
             title,
             description,
             deadline: deadline || null,
-            createdBy, // Using current user
+            createdBy: 'Balaji-R-2007', // Using current user
             createdAt: new Date().toISOString()
         });
 
