@@ -2,13 +2,18 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-import { router as routes } from './routes.js'; // Fixed import
+import { router as routes } from './routes.js';
+import connectDB from './config/db.js';
 
 dotenv.config();
+
+// Connect to database
+connectDB();
+
 const app = express();
 
 app.use(cors({
-    origin: "http://localhost:5173", // Frontend URL
+    origin: "http://localhost:5173",
     credentials: true,
 }));
 app.use(express.json());
