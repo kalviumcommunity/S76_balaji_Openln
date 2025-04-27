@@ -21,7 +21,8 @@ export const createTask = async (req, res) => {
             description,
             deadline: deadline || null,
             createdBy: 'Balaji-R-2007', // Using current user
-            createdAt: new Date().toISOString()
+            deadline: deadline || null,
+            createdBy: 'Balaji-R-2007' // Using current user
         });
 
         res.status(201).json({
