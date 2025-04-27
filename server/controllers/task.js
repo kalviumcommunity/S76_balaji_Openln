@@ -1,3 +1,8 @@
+import Task from '../models/task.js';
+
+// @desc    Create new task
+// @route   POST /api/tasks
+// @access  Public
 export const createTask = async (req, res) => {
     try {
         const { title, description, deadline } = req.body;
@@ -10,34 +15,32 @@ export const createTask = async (req, res) => {
             });
         }
 
-        // Create task object
-        const newTask = {
+        // Create task in database
+        const task = await Task.create({
             title,
             description,
             deadline: deadline || null,
-            status: 'pending',
-            createdAt: new Date().toISOString(),
-            createdBy: 'Balaji-R-2007' // Using your current login
-        };
+            createdBy, // Using current user
+            createdAt: new Date().toISOString()
+        });
 
-        // For now, we'll just return the created task
-        // In the next PR, we'll add database integration
         res.status(201).json({
             success: true,
-            data: newTask
+            data: task
         });
 
     } catch (error) {
         console.error('Error creating task:', error);
         res.status(500).json({
             success: false,
-            message: 'Server error while creating task'
+            message: error.message || 'Server error while creating task'
         });
     }
 };
 
-
-// update task
+// @desc    Update task
+// @route   PUT /api/tasks/:id
+// @access  Public
 export const updateTask = async (req, res) => {
     try {
         const { id } = req.params;
@@ -51,37 +54,68 @@ export const updateTask = async (req, res) => {
             });
         }
 
-        // Validate status if provided
-        if (status && !['pending', 'in-progress', 'completed'].includes(status)) {
-            return res.status(400).json({
+        // Find task
+        let task = await Task.findById(id);
+        if (!task) {
+            return res.status(404).json({
                 success: false,
-                message: 'Invalid status value'
+                message: 'Task not found'
             });
         }
 
-        // For demo purposes, we'll just return the updated task
-        // In the next PR with database integration, we'll actually update the task
-        const updatedTask = {
+        // Update task
+        task = await Task.findByIdAndUpdate(
             id,
-            title: title || 'Existing Title',
-            description: description || 'Existing Description',
-            deadline: deadline || null,
-            status: status || 'pending',
-            updatedAt: new Date().toISOString(),
-            updatedBy: 'Balaji-R-2007',
-            lastModified: '2025-04-27 10:27:31'
-        };
+            {
+                ...(title && { title }),
+                ...(description && { description }),
+                ...(deadline && { deadline }),
+                ...(status && { status }),
+                updatedBy: 'Balaji-R-2007',
+                updatedAt: new Date().toISOString()
+            },
+            { new: true, runValidators: true }
+        );
 
         res.json({
             success: true,
-            data: updatedTask
+            data: task
         });
 
     } catch (error) {
         console.error('Error updating task:', error);
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
         res.status(500).json({
             success: false,
             message: 'Server error while updating task'
+        });
+    }
+};
+
+// @desc    Get all tasks
+// @route   GET /api/tasks
+// @access  Public
+export const getTasks = async (req, res) => {
+    try {
+        const tasks = await Task.find()
+            .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            count: tasks.length,
+            data: tasks
+        });
+
+    } catch (error) {
+        console.error('Error fetching tasks:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while fetching tasks'
         });
     }
 };
