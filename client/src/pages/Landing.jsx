@@ -98,7 +98,7 @@ const Landing = () => {
       <div className='absolute inset-0 flex justify-center items-center'>
         <img src="/bg-ell.png" className='bg-image h-200 blur-3xl opacity-0 w-300' alt="background" />
       </div>
-      <div className='bg-white/12 h-full pb-50 backdrop-blur-lg'>
+      <div className='bg-white/12 h-full pb-12 backdrop-blur-lg'>
 
         {/* Login and Signup buttons */}
         <div className='relative flex justify-end p-5'>
