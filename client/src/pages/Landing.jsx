@@ -111,7 +111,7 @@ const Landing = () => {
         {/* Logo and tagline */}
         <div className='relative flex flex-col items-center justify-between flex-grow px-4 py-16'>
           <div className='text-center mt-8'>
-            <img ref={logoRef} src="/logo1.png" alt="Open In" className='mx-auto h-40 w-120 mb-5 mt-[15%] max-w-md' />
+            <img ref={logoRef} src="/logo1.png" alt="Open In" className='mx-auto h-40 w-[120px] mb-5 mt-[15%] max-w-md' />
             <h2 ref={taglineRef} className='text-gray-400 font-medium text-xl'>Level Up Your Skills Like a Solo Protagonist</h2>
           </div>
         </div>
