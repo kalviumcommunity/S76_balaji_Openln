@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
+import { Link } from 'react-router-dom';
 
 const Landing = () => {
   // Refs for various elements to animate
@@ -13,7 +14,7 @@ const Landing = () => {
 
   useEffect(() => {
     // Initial animation setup
-    gsap.set([logoRef.current, taglineRef.current, headingRef.current, featuresRef.current], { 
+    gsap.set([logoRef.current, taglineRef.current, headingRef.current], { 
       opacity: 0,
       y: 50
     });
@@ -68,20 +69,7 @@ const Landing = () => {
       y: 0 
     }, 1.2);
     
-    // Features section animation
-    tl.to(featuresRef.current, { 
-      duration: 1, 
-      opacity: 1, 
-      y: 0 
-    }, 1.5);
-    
-    // Individual feature items animation
-    tl.from(".feature-item", {
-      opacity: 0,
-      y: 20,
-      stagger: 0.15,
-      duration: 0.8
-    }, 1.7);
+    // Removed features section animation
     
     // Footer animation
     tl.to(footerRef.current, { 
@@ -103,16 +91,16 @@ const Landing = () => {
         {/* Login and Signup buttons */}
         <div className='relative flex justify-end p-5'>
           <div className='font-bold text-2xl flex gap-5'>
-            <span ref={loginRef} className='cursor-pointer hover:scale-105'>Login</span>
-            <span ref={signupRef} className='cursor-pointer hover:scale-105'>Signup</span>
+            <Link to="/login" ref={loginRef} className='cursor-pointer hover:scale-105'>Login</Link>
+            <Link to="/signup" ref={signupRef} className='cursor-pointer hover:scale-105'>Signup</Link>
           </div>
         </div>
 
         {/* Logo and tagline */}
         <div className='relative flex flex-col items-center justify-between flex-grow px-4 py-16'>
           <div className='text-center mt-8'>
-            <img ref={logoRef} src="/logo1.png" alt="Open In" className='mx-auto h-40 w-[120px] mb-5 mt-[15%] max-w-md' />
-            <h2 ref={taglineRef} className='text-gray-400 font-medium text-xl'>Level Up Your Skills Like a Solo Protagonist</h2>
+            <img ref={logoRef} src="/logo1.png" alt="Open In" className='mx-auto h-40 w-[400px] mb-5 mt-[15%] max-w-md' />
+            <h2 ref={taglineRef} className='text-gray-400 font-medium mb-50 text-xl'>Level Up Your Skills Like a Solo Protagonist</h2>
           </div>
         </div>
       </div>
@@ -125,14 +113,66 @@ const Landing = () => {
       </div>
 
       {/* Features section */}
-      <div ref={featuresRef} className='bg-purple-900/40 backdrop-blur-md rounded-lg p-8 max-w-xl w-full'>
-        <ul className='flex flex-col gap-5 text-center'>
-          <li className='feature-item py-2'>Personalized Learning Plan</li>
-          <li className='feature-item py-2'>Rank System (E to S)</li>
-          <li className='feature-item py-2'>Daily LeetCode & Project Tasks</li>
-          <li className='feature-item py-2'>AI Feedback & GitHub Verification</li>
-          <li className='feature-item py-2'>Real-Time Progress Tracking</li>
-        </ul>
+      <div className="relative my-20">
+        {/* Ellipse background */}
+        <div className="absolute inset-0 flex justify-center items-center pointer-events-none -z-10">
+          <img
+            src="/bg-ell.png"
+            alt="ellipse background"
+            className="w-[600px] h-[350px] md:w-[700px] md:h-[400px] blur-2xl opacity-60"
+            style={{ objectFit: 'cover' }}
+          />
+        </div>
+        <div
+          ref={featuresRef}
+          className="relative grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl w-full mx-auto"
+        >
+          {/* Feature Card 1 */}
+          <div className="feature-item group bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl flex flex-col items-center text-center">
+            <svg className="h-12 w-12 mb-4 text-purple-400 group-hover:text-purple-300 transition-colors" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M12 20V10M12 10L8 14M12 10l4 4" />
+              <circle cx="12" cy="12" r="10" />
+            </svg>
+            <h3 className="font-semibold text-xl mb-2">Personalized Learning Plan</h3>
+            <p className="text-gray-200">Get a roadmap tailored to your goals and skill level, updated as you progress.</p>
+          </div>
+          {/* Feature Card 2 */}
+          <div className="feature-item group bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl flex flex-col items-center text-center">
+            <svg className="h-12 w-12 mb-4 text-purple-400 group-hover:text-purple-300 transition-colors" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 9l5-5 5 5M12 4v12" />
+            </svg>
+            <h3 className="font-semibold text-xl mb-2">Rank System (E to S)</h3>
+            <p className="text-gray-200">Level up from E to S rank as you complete challenges and projects.</p>
+          </div>
+          {/* Feature Card 3 */}
+          <div className="feature-item group bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl flex flex-col items-center text-center">
+            <svg className="h-12 w-12 mb-4 text-purple-400 group-hover:text-purple-300 transition-colors" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <rect x="3" y="8" width="18" height="13" rx="2" />
+              <path d="M16 3h-8a2 2 0 00-2 2v3h12V5a2 2 0 00-2-2z" />
+            </svg>
+            <h3 className="font-semibold text-xl mb-2">Daily LeetCode & Project Tasks</h3>
+            <p className="text-gray-200">Practice with daily coding problems and hands-on project assignments.</p>
+          </div>
+          {/* Feature Card 4 */}
+          <div className="feature-item group bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl flex flex-col items-center text-center">
+            <svg className="h-12 w-12 mb-4 text-purple-400 group-hover:text-purple-300 transition-colors" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M12 20h9" />
+              <path d="M12 4v16" />
+              <path d="M4 4h16v16H4z" />
+            </svg>
+            <h3 className="font-semibold text-xl mb-2">AI Feedback & GitHub Verification</h3>
+            <p className="text-gray-200">Receive instant AI-powered feedback and verify your progress via GitHub.</p>
+          </div>
+          {/* Feature Card 5 */}
+          <div className="feature-item group bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl flex flex-col items-center text-center md:col-span-2">
+            <svg className="h-12 w-12 mb-4 text-purple-400 group-hover:text-purple-300 transition-colors" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+            <h3 className="font-semibold text-xl mb-2">Real-Time Progress Tracking</h3>
+            <p className="text-gray-200">Visualize your journey and stay motivated with real-time stats and streaks.</p>
+          </div>
+        </div>
       </div>
 
       {/* Footer */}
