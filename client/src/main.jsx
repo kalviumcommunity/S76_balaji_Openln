@@ -8,6 +8,7 @@ import OnboardingGoal from "./pages/OnboardingGoal";
 import OnboardingTimeCommitment from './pages/OnboardingTimeCommitment';
 import OnboardingLearningStyle from './pages/OnboardingLearningStyle';
 import OnboardingQuiz from './pages/OnboardingQuiz';
+import Dashboard from './pages/Dashboard'; 
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -21,7 +22,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/onboarding/time-commitment" element={<OnboardingTimeCommitment />} />
         <Route path="/onboarding/learning-style" element={<OnboardingLearningStyle />} />
         <Route path="/onboarding/quiz" element={<OnboardingQuiz />} />
-
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
