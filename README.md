@@ -1,5 +1,5 @@
 # Open ln
-
+[![Netlify Status](https://api.netlify.com/api/v1/badges/63308681-bf23-46f0-ba25-36449d2328a9/deploy-status)](https://app.netlify.com/sites/openln/deploys)
 ## 🎯 Project Title:
 Open ln: An AI-Driven Personalized Learning & Goal Tracking System
 
