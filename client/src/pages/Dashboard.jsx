@@ -32,7 +32,7 @@ const Dashboard = () => {
         <img
           src="/bg-ell.png"
           alt="background"
-          className="absolute inset-0 w-[1000px] opacity-40 h-[600px] blur-md object-cover md:ml-[22%] mt-22 pointer-events-none z-0"
+          className="absolute inset-0 w-[500px] opacity-40 h-[700px] blur-md object-cover md:ml-[57%] mt-8 pointer-events-none z-0"
         />
 
         {/* Card */}
@@ -73,7 +73,7 @@ const Dashboard = () => {
                 <span className="text-[#A259FF]">E</span>
                 <span className="text-white/70">D</span>
               </div>
-              <div className="w-full h-4 bg-white/30 rounded-full overflow-hidden">
+              <div className="w-full hover:bg-white/60 h-4 bg-white/30 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-[#A259FF] rounded-full"
                   style={{ width: `${user.progress}%` }}
@@ -81,7 +81,7 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Goal */}
-            <div className=" bg-white/15 rounded-2xl px-4 md:px-8 py-5 flex flex-col items-center">
+            <div className=" bg-white/15 rounded-2xl hover:scale-105 px-4 md:px-8 py-5 flex flex-col items-center">
               <span className="text-xl md:text-2xl font-normal text-white mb-2">Goal</span>
               <span className="text-lg md:text-xl font-medium text-[#FFD600] bg-white/10 rounded-xl px-4 py-2 w-full text-center">
                 {userGoal}

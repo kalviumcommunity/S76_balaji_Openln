@@ -40,19 +40,19 @@ const OnboardingGoal = () => {
 	};
 
 	return (
-		<div className="min-h-screen w-full flex bg-black">
-			{/* Left: Progress & Title */}
-			<div className="flex flex-col justify-center items-center flex-1 bg-black relative">
-				<h1 className="text-white text-[70px] font-bold mb-4 mt-[-80px] leading-none">
+		<div className="min-h-screen w-full flex flex-col md:flex-row bg-black">
+			{/* Left: Progress & Title - Now top section on mobile */}
+			<div className="flex flex-col justify-center items-center py-8 md:py-0 md:flex-1 bg-black relative">
+				<h1 className="text-white text-4xl md:text-[70px] font-bold mb-2 md:mb-4 md:mt-[-80px] leading-none text-center">
 					Onboarding
 				</h1>
-				<div className="text-purple-600 text-[140px] font-bold mb-2 leading-none">
+				<div className="text-purple-600 text-7xl md:text-[140px] font-bold mb-1 md:mb-2 leading-none">
 					1
 				</div>
-				<div className="text-white text-[42px] mb-16 font-light">
+				<div className="text-white text-2xl md:text-[42px] mb-8 md:mb-16 font-light text-center">
 					Pick Your goal
 				</div>
-				<div className="w-[370px] h-3 bg-gray-300 rounded-full overflow-hidden absolute bottom-16">
+				<div className="w-[80%] md:w-[370px] h-3 bg-gray-300 rounded-full overflow-hidden md:absolute md:bottom-16">
 					<div
 						className="h-full bg-purple-600 rounded-full"
 						style={{ width: "5%" }}
@@ -60,17 +60,17 @@ const OnboardingGoal = () => {
 				</div>
 			</div>
 
-			{/* Right: Goal Selection or AI Chat */}
-			<div className="flex-1 bg-gradient-to-br from-[#1a0026] via-[#2d0036] to-[#3a005c] relative">
-				<div className="w-full h-full flex flex-col justify-center items-center px-6">
+			{/* Right: Goal Selection or AI Chat - Now bottom section on mobile */}
+			<div className="flex-1 bg-gradient-to-br from-[#1a0026] via-[#2d0036] to-[#3a005c] relative pb-10 md:pb-0">
+				<div className="w-full h-full flex flex-col justify-start md:justify-center items-center px-4 md:px-6 pt-8 md:pt-0">
 					<div className="w-full max-w-md">
 						{!showAiChat ? (
 							<>
-								<div className="flex flex-col items-center gap-4 mb-8">
+								<div className="flex flex-col items-center gap-3 md:gap-4 mb-6 md:mb-8">
 									{suggestedGoals.map((goal) => (
 										<button
 											key={goal}
-											className="w-full py-3 rounded-2xl text-white text-lg font-medium bg-[#4a295a] bg-opacity-60 hover:bg-purple-700 transition-colors duration-300"
+											className="w-full py-3 px-4 rounded-2xl text-white text-base md:text-lg font-medium bg-[#4a295a] bg-opacity-60 hover:bg-purple-700 transition-colors duration-300"
 											onClick={() => handleGoalSelect(goal)}
 										>
 											{goal}
@@ -78,7 +78,7 @@ const OnboardingGoal = () => {
 									))}
 								</div>
 
-								<div className="text-gray-400 text-center mb-6">
+								<div className="text-gray-400 text-center mb-4 md:mb-6 text-sm md:text-base">
 									Select one or type your own
 								</div>
 
@@ -86,7 +86,7 @@ const OnboardingGoal = () => {
 									<div className="relative">
 										<input
 											type="text"
-											className="w-full bg-[#4a295a] bg-opacity-60 rounded-2xl py-3 px-4 text-white placeholder-gray-300 focus:outline-none"
+											className="w-full bg-[#4a295a] bg-opacity-60 rounded-2xl py-3 px-4 text-white placeholder-gray-300 focus:outline-none text-sm md:text-base"
 											placeholder="Type your own goal..."
 											value={userGoal}
 											onChange={handleInputChange}
@@ -94,21 +94,21 @@ const OnboardingGoal = () => {
 										<button
 											type="submit"
 											disabled={!userGoal.trim()}
-											className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white px-4 py-1.5 rounded-xl transition-colors"
+											className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white px-3 md:px-4 py-1.5 rounded-xl transition-colors text-sm md:text-base"
 										>
 											Next
 										</button>
 									</div>
 								</form>
 
-								<div className="text-center mt-8">
+								<div className="text-center mt-6 md:mt-8">
 									<button
 										onClick={toggleAiChat}
-										className="text-purple-400 hover:text-purple-300 flex items-center justify-center gap-2 mx-auto"
+										className="text-purple-400 hover:text-purple-300 flex items-center justify-center gap-2 mx-auto text-xs md:text-sm"
 									>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
-											className="h-5 w-5"
+											className="h-4 w-4 md:h-5 md:w-5"
 											viewBox="0 0 20 20"
 											fill="currentColor"
 										>
@@ -123,7 +123,7 @@ const OnboardingGoal = () => {
 								</div>
 							</>
 						) : (
-							<div className="h-[500px] flex flex-col">
+							<div className="h-[400px] md:h-[500px] flex flex-col">
 								<AiChat
 									onClose={toggleAiChat}
 									onSelectGoal={handleGoalSelect}
