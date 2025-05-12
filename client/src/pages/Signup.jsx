@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -8,6 +8,59 @@ const Signup = () => {
   const [rePassword, setRePassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (!username || !email || !password) {
+      setError("All fields are required");
+      return;
+    }
+    
+    if (password !== rePassword) {
+      setError("Passwords don't match");
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      setError("");
+      
+      const response = await fetch("https://s76-balaji-openln.onrender.com/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password
+        }),
+        credentials: "include"
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Signup failed");
+      }
+      
+      // Store token in localStorage
+      localStorage.setItem("token", data.token);
+      
+      // Redirect to onboarding page
+      navigate("/onboarding/goal");
+      
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-purple-800">
@@ -15,7 +68,14 @@ const Signup = () => {
         <img src="/logo1.png" alt="Open In" className="h-16 mb-6" />
         <h2 className="text-2xl font-bold text-white mb-2">Create your Account</h2>
         <p className="text-gray-300 mb-8">Sign up to start your journey</p>
-        <form className="w-full flex flex-col gap-4 mb-6">
+        
+        {error && (
+          <div className="w-full bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-2 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
+        
+        <form className="w-full flex flex-col gap-4 mb-6" onSubmit={handleSubmit}>
           <input
             type="text"
             className="rounded-lg px-4 py-2 bg-white/80 text-black placeholder-gray-500 focus:outline-none"
@@ -92,9 +152,10 @@ const Signup = () => {
           </div>
           <button
             type="submit"
-            className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg transition-all duration-200"
+            disabled={loading}
+            className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Sign Up
+            {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
         <div className="flex items-center w-full mb-6">
@@ -103,7 +164,8 @@ const Signup = () => {
           <div className="flex-grow border-t border-white/30"></div>
         </div>
         <button
-          className="flex items-center gap-3 bg-white/80 hover:bg-white text-black font-semibold px-6 py-3 rounded-lg shadow transition-all duration-200 w-full justify-center"
+          disabled={true} // Disable Google signup for now
+          className="flex items-center gap-3 bg-gray-400/40 text-gray-300 font-semibold px-6 py-3 rounded-lg shadow w-full justify-center cursor-not-allowed"
         >
           <svg className="h-6 w-6" viewBox="0 0 48 48">
             <g>
@@ -113,7 +175,7 @@ const Signup = () => {
               <path d="M44.5 20H24v8.5h11.7c-1.1 3.1-4.1 6.5-11.7 6.5-5.6 0-10.2-3.1-12.7-7.6l-6.5 5C7.9 40.2 15.3 44 24 44c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.3-4z" fill="#1976D2"/>
             </g>
           </svg>
-          Sign up with Google
+          Google Sign Up (Coming Soon)
         </button>
         <p className="mt-6 text-gray-300 text-sm">
           Already have an account?{" "}
