@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const TodaysTask = () => {
   // You can replace this with real progress data later
@@ -7,20 +8,28 @@ const TodaysTask = () => {
   // Task items in an array
   const tasks = [
     {
+      id: 1,
       type: "AI Module",
-      description: "How to get your goal."
+      description: "How to get your goal.",
+      completed: false
     },
     {
+      id: 2,
       type: "LeetCode",
-      description: "Longest Substring Without Repeating Characters"
+      description: "Longest Substring Without Repeating Characters",
+      completed: false
     },
     {
+      id: 3,
       type: "Project Task",
-      description: "Build a Simple Portfolio Website"
+      description: "Build a Simple Portfolio Website",
+      completed: false
     },
     {
+      id: 4,
       type: "Reflection Prompt",
-      description: "Write 3 things you learned today"
+      description: "Write 3 things you learned today",
+      completed: false
     }
   ];
   
@@ -38,15 +47,27 @@ const TodaysTask = () => {
       
       {/* Task items */}
       <div className="space-y-3">
-        {tasks.map((task, index) => (
-          <div 
-            key={index} 
-            className=" bg-white/15 rounded-xl p-4 transition-transform hover:translate-x-1"
+        {tasks.map((task) => (
+          <Link 
+            key={task.id}
+            to={`/task/${task.id}`}
+            className="block bg-white/15 rounded-xl p-4 transition-transform hover:translate-x-1 hover:bg-white/20"
           >
-            <p className="text-white font-medium">
-              {task.type}: "{task.description}"
-            </p>
-          </div>
+            <div className="flex items-center justify-between">
+              <p className="text-white font-medium">
+                {task.type}: "{task.description}"
+              </p>
+              {task.completed ? (
+                <span className="bg-green-500/30 text-green-300 text-sm px-3 py-1 rounded-full">
+                  Completed
+                </span>
+              ) : (
+                <span className="bg-yellow-500/30 text-yellow-300 text-sm px-3 py-1 rounded-full">
+                  In Progress
+                </span>
+              )}
+            </div>
+          </Link>
         ))}
       </div>
     </div>
