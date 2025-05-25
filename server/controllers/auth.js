@@ -200,3 +200,21 @@ export const updateProfile = async (req, res) => {
     });
   }
 };
+
+// Google OAuth callback
+export const googleCallback = (req, res) => {
+  try {
+    // Generate JWT for the authenticated user
+    const token = jwt.sign(
+      { id: req.user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    // Redirect to frontend with token
+    res.redirect(`${process.env.CLIENT_URL}/login?token=${token}`);
+  } catch (error) {
+    console.error('Error in Google auth callback:', error);
+    res.redirect(`${process.env.CLIENT_URL}/login?error=ServerError`);
+  }
+};

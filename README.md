@@ -60,3 +60,13 @@ Every user starts with a goal, and the AI generates a personalized roadmap with 
 - Test full flow.
   
 ---
+
+# Deployed link:
+
+## backend:
+
+https://s76-balaji-openln.onrender.com
+
+## Frontend:
+
+https://openln.netlify.app/

@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import { router as routes } from './routes.js';
 import connectDB from './config/db.js';
+import passport from './config/passport.js'; // Import passport configuration
 
 dotenv.config();
 
@@ -18,6 +19,9 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+
+// Initialize passport
+app.use(passport.initialize());
 
 // routes
 app.get("/", (req, res) => {
