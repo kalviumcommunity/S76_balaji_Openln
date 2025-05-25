@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -7,6 +7,32 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Function to handle Google Login
+  const handleGoogleLogin = () => {
+    // Redirect to Google OAuth route on your backend
+    window.location.href = "https://s76-balaji-openln.onrender.com/api/auth/google";
+  };
+
+  // Check if redirected from Google OAuth with token
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const error = urlParams.get('error');
+    
+    if (token) {
+      // Store token in localStorage
+      localStorage.setItem('token', token);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      // Navigate to dashboard
+      navigate('/dashboard');
+    } else if (error) {
+      setError(error);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -96,8 +122,8 @@ const Login = () => {
           <div className="flex-grow border-t border-white/30"></div>
         </div>
         <button
-          disabled={true} // Disable Google login for now
-          className="flex items-center gap-3 bg-gray-400/40 text-gray-300 font-semibold px-6 py-3 rounded-lg shadow transition-all duration-200 w-full justify-center cursor-not-allowed"
+          onClick={handleGoogleLogin}
+          className="flex items-center gap-3 bg-white/20 text-white font-semibold px-6 py-3 rounded-lg shadow transition-all duration-200 w-full justify-center hover:bg-white/30"
         >
           <svg className="h-6 w-6" viewBox="0 0 48 48">
             <g>
@@ -107,7 +133,7 @@ const Login = () => {
               <path d="M44.5 20H24v8.5h11.7c-1.1 3.1-4.1 6.5-11.7 6.5-5.6 0-10.2-3.1-12.7-7.6l-6.5 5C7.9 40.2 15.3 44 24 44c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.3-4z" fill="#1976D2"/>
             </g>
           </svg>
-          Google Sign In (Coming Soon)
+          Sign in with Google
         </button>
         <p className="mt-6 text-gray-300 text-sm">
           Don't have an account?{" "}
