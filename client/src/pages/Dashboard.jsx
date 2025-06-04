@@ -23,7 +23,7 @@ const Dashboard = () => {
           return;
         }
         
-        const response = await fetch('https://s76-balaji-openln.onrender.com/api/auth/me', {
+        const response = await fetch('http://localhost:5000/api/auth/me', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -37,6 +37,13 @@ const Dashboard = () => {
         }
         
         const data = await response.json();
+        
+        // Check if user has completed onboarding
+        if (!data.user.profileData.goal) {
+          // If goal is not set, redirect to onboarding
+          navigate('/onboarding/goal');
+          return;
+        }
         
         // Update user state with data from server
         setUser({

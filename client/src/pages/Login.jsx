@@ -10,23 +10,35 @@ const Login = () => {
 
   // Function to handle Google Login
   const handleGoogleLogin = () => {
-    // Redirect to Google OAuth route on your backend
-    window.location.href = "https://s76-balaji-openln.onrender.com/api/auth/google";
+    // Use the appropriate URL based on environment
+    const backendUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://s76-balaji-openln.onrender.com' 
+      : 'http://localhost:5000';
+      
+    window.location.href = `${backendUrl}/api/auth/google`;
   };
-
+  
   // Check if redirected from Google OAuth with token
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     const error = urlParams.get('error');
+    const newUser = urlParams.get('newUser');
     
     if (token) {
       // Store token in localStorage
       localStorage.setItem('token', token);
+      
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
-      // Navigate to dashboard
-      navigate('/dashboard');
+      
+      // If it's a new user, redirect to onboarding flow
+      if (newUser === 'true') {
+        navigate('/onboarding/goal');
+      } else {
+        // Otherwise, go to dashboard
+        navigate('/dashboard');
+      }
     } else if (error) {
       setError(error);
       // Clean up URL
@@ -47,7 +59,7 @@ const Login = () => {
       setLoading(true);
       setError("");
       
-      const response = await fetch("https://s76-balaji-openln.onrender.com/api/auth/login", {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

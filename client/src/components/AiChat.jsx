@@ -1,27 +1,64 @@
 import React, { useState, useRef, useEffect } from "react";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+// Initialize the Gemini AI
+// You should store this key in an environment variable in a real application
+const API_KEY = "AIzaSyCAbNEZsHxmKKRBmyEMRV8Qoie8j-_m_xQ"; 
+const genAI = new GoogleGenerativeAI(API_KEY);
 
 const AiChat = ({ onClose, onSelectGoal, taskType = null, taskTitle = null }) => {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const modelRef = useRef(null);
+  const chatRef = useRef(null);
   
-  // Initialize chat differently based on whether it's for a task or general goal selection
+  // Initialize Gemini model and chat
   useEffect(() => {
-    if (taskType && taskTitle) {
-      setChatHistory([
-        { 
-          sender: "ai", 
-          text: `I can help you with your ${taskType} task: "${taskTitle}". What would you like to know?` 
+    const initializeGemini = async () => {
+      try {
+        // Get the generative model
+        modelRef.current = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        
+        // Start a chat
+        chatRef.current = modelRef.current.startChat({
+          history: [],
+          generationConfig: {
+            maxOutputTokens: 500,
+            temperature: 0.7,
+            topP: 0.8,
+            topK: 40,
+          },
+        });
+        
+        // Set initial system prompt based on context
+        let initialPrompt = "";
+        if (taskType && taskTitle) {
+          initialPrompt = `You are Cosa AI, an AI assistant for the Open ln learning platform. You're helping a user with their ${taskType} task: "${taskTitle}". Provide concise, helpful responses related to this task. Keep responses under 150 words. If asked about something unrelated to the task, gently redirect the conversation back to the task.`;
+        } else {
+          initialPrompt = `You are Cosa AI, an AI assistant for the Open ln learning platform. Your role is to help users select appropriate learning goals. Ask questions to understand user interests and recommend one of these goals. Keep responses under 150 words.`;
         }
-      ]);
-    } else {
-      setChatHistory([
-        { 
+        
+        // Send the system prompt
+        await chatRef.current.sendMessage(initialPrompt);
+        
+        // Set initial message
+        const initialMessage = taskType && taskTitle
+          ? `I can help you with your ${taskType} task: "${taskTitle}". What would you like to know?`
+          : "Hi there! I'm Cosa AI. I can help you choose a goal that fits your interests and career aspirations. What are you most interested in?";
+        
+        setChatHistory([{ sender: "ai", text: initialMessage }]);
+      } catch (error) {
+        console.error("Error initializing Gemini:", error);
+        setChatHistory([{ 
           sender: "ai", 
-          text: "Hi there! I'm Cosa AI. I can help you choose a goal that fits your interests and career aspirations. What are you most interested in?" 
-        }
-      ]);
-    }
+          text: "I'm having trouble connecting. Please try again later." 
+        }]);
+      }
+    };
+    
+    initializeGemini();
   }, [taskType, taskTitle]);
   
   // Auto scroll to bottom when messages change
@@ -31,98 +68,91 @@ const AiChat = ({ onClose, onSelectGoal, taskType = null, taskTitle = null }) =>
     }
   }, [chatHistory]);
   
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     
-    if (!message.trim()) return;
+    if (!message.trim() || isLoading || !chatRef.current) return;
     
     // Add user message to chat
     setChatHistory([...chatHistory, { sender: "user", text: message }]);
     
     // Clear input
     setMessage("");
+    setIsLoading(true);
     
-    // Generate response based on context
-    setTimeout(() => {
-      let response;
-      const lowerMsg = message.toLowerCase();
+    try {
+      const userMessage = message;
+      const lowerMsg = userMessage.toLowerCase();
       
-      if (taskType) {
-        // Task-specific responses
-        switch(taskType) {
-          case "AI Module":
-            if (lowerMsg.includes("smart") || lowerMsg.includes("goal")) {
-              response = "SMART goals are Specific, Measurable, Achievable, Relevant, and Time-bound. For example, instead of 'learn coding,' a SMART goal would be 'complete a React.js course and build a portfolio project in 6 weeks.'";
-            } else if (lowerMsg.includes("example") || lowerMsg.includes("instance")) {
-              response = "Here's an example of a SMART goal: 'I will acquire 3 new JavaScript skills by completing 5 practice projects in the next 30 days, spending at least 1 hour daily on coding.'";
-            } else {
-              response = "This module teaches effective goal-setting using the SMART framework. Would you like help understanding a specific part of SMART goals, or would you like an example?";
-            }
-            break;
-            
-          case "LeetCode":
-            if (lowerMsg.includes("hint") || lowerMsg.includes("help")) {
-              response = "For this problem, try using a sliding window approach with a hash set. Start with two pointers (left and right) at the beginning, and move the right pointer while tracking characters in a set. When you find a duplicate, move the left pointer until the duplicate is removed.";
-            } else if (lowerMsg.includes("solution") || lowerMsg.includes("answer")) {
-              response = "I can provide the general approach: use a sliding window with two pointers, track characters in a hash set, and adjust the window when duplicates are found. Would you like more specific guidance on implementation?";
-            } else {
-              response = "This LeetCode problem asks you to find the length of the longest substring without repeating characters. Would you like a hint, or would you prefer to discuss your current approach?";
-            }
-            break;
-            
-          case "Project Task":
-            if (lowerMsg.includes("structure") || lowerMsg.includes("html")) {
-              response = "For your portfolio structure, consider these HTML sections: <header> with your name and navigation, <section> for About Me, <section> for Skills with <ul> lists, <section> for Projects with cards, and a <footer> with contact info and form.";
-            } else if (lowerMsg.includes("css") || lowerMsg.includes("style")) {
-              response = "For styling your portfolio, consider using CSS Grid or Flexbox for layout. For mobile responsiveness, use media queries. A clean color scheme with 2-3 colors usually works best.";
-            } else if (lowerMsg.includes("responsive") || lowerMsg.includes("mobile")) {
-              response = "Make your site responsive with: 1) Meta viewport tag, 2) Relative units (%, em, rem), 3) Media queries for breakpoints, 4) Flexbox/Grid for layouts, and 5) Testing on multiple screen sizes.";
-            } else {
-              response = "I can help with your portfolio website project. Do you need assistance with HTML structure, CSS styling, JavaScript functionality, or making it responsive?";
-            }
-            break;
-            
-          case "Reflection Prompt":
-            if (lowerMsg.includes("example") || lowerMsg.includes("sample")) {
-              response = "Here's a sample reflection entry:\n\n1. Today I learned about CSS Grid and how it simplifies complex layouts compared to using multiple nested divs.\n\n2. I discovered the importance of semantic HTML for accessibility and SEO.\n\n3. I learned that regular code refactoring saves time in the long run by reducing technical debt.";
-            } else if (lowerMsg.includes("stuck") || lowerMsg.includes("what to write")) {
-              response = "If you're feeling stuck, try asking yourself: What surprised you today? What was challenging? What concepts clicked for you? What would you explain differently to yourself a week ago?";
-            } else {
-              response = "Reflections help solidify your learning. Try to be specific about what you learned, how it changed your understanding, and how you might apply it in the future. Would you like an example reflection?";
-            }
-            break;
-            
-          default:
-            response = "I'm here to help with your task. What specific aspect would you like assistance with?";
-        }
-      } else {
-        // Goal selection responses (existing code)
-        if (lowerMsg.includes("job") || lowerMsg.includes("career") || lowerMsg.includes("salary") || lowerMsg.includes("lpa")) {
-          response = "Based on your interest in jobs and career growth, I'd recommend 'Getting 12+ lpa job' as your goal. Would you like to select this?";
-        } else if (lowerMsg.includes("startup") || lowerMsg.includes("business") || lowerMsg.includes("entrepreneur")) {
-          response = "Since you're interested in entrepreneurship, 'Starting a Startup' would be a great goal for you. Would you like to select this?";
-        } else if (lowerMsg.includes("full stack") || lowerMsg.includes("development") || lowerMsg.includes("coding") || lowerMsg.includes("programming")) {
-          response = "For someone interested in development, 'Full stack Dev' is a solid choice that covers both frontend and backend. Would you like to select this?";
-        } else if (lowerMsg.includes("gsoc") || lowerMsg.includes("open source") || lowerMsg.includes("google")) {
-          response = "If you're interested in open source contribution, 'Crack GSOC' is perfect for building your portfolio. Would you like to select this?";
-        } else {
-          response = "I see. Based on what you've shared, which of these interests you most: getting a high-paying job, starting your own business, becoming a full-stack developer, or contributing to open source?";
-        }
-        
-        // Suggest goals after AI response for goal selection chat
-        if (lowerMsg.includes("yes") || lowerMsg.includes("sure") || lowerMsg.includes("ok") || lowerMsg.includes("select")) {
-          setTimeout(() => {
-            setChatHistory(prev => [...prev, { 
-              sender: "ai", 
-              text: "Great! Here are some suggested goals. Click one to select it:",
-              suggestions: true 
-            }]);
-          }, 1000);
+      // Check if user is trying to select a goal directly
+      if (!taskType && (
+        lowerMsg.includes("12+ lpa") || 
+        lowerMsg.includes("startup") ||
+        lowerMsg.includes("full stack") ||
+        lowerMsg.includes("gsoc")
+      )) {
+        // If directly mentioning a goal and saying yes/select
+        if (lowerMsg.includes("yes") || lowerMsg.includes("select") || lowerMsg.includes("choose")) {
+          let goalToSelect = "";
+          
+          if (lowerMsg.includes("12+ lpa") || lowerMsg.includes("job")) {
+            goalToSelect = "Getting 12+ lpa job";
+          } else if (lowerMsg.includes("startup")) {
+            goalToSelect = "Starting an Startup";
+          } else if (lowerMsg.includes("full stack")) {
+            goalToSelect = "Full stack Dev";
+          } else if (lowerMsg.includes("gsoc")) {
+            goalToSelect = "Crack GSOC";
+          }
+          
+          if (goalToSelect && onSelectGoal) {
+            setTimeout(() => {
+              setChatHistory(prev => [...prev, { 
+                sender: "ai", 
+                text: `Excellent choice! "${goalToSelect}" is a great goal. I'll set this as your main goal.` 
+              }]);
+              
+              setTimeout(() => onSelectGoal(goalToSelect), 1500);
+            }, 800);
+            setIsLoading(false);
+            return;
+          }
         }
       }
       
-      setChatHistory(prev => [...prev, { sender: "ai", text: response }]);
-    }, 800);
+      // Get response from Gemini
+      const result = await chatRef.current.sendMessage(userMessage);
+      const response = result.response;
+      const text = response.text();
+      
+      // Check if user is expressing interest in selecting a goal
+      if (!taskType && (
+        lowerMsg.includes("yes") || lowerMsg.includes("sure") || 
+        lowerMsg.includes("ok") || lowerMsg.includes("select")
+      )) {
+        // Add suggestions after the AI response
+        setChatHistory(prev => [...prev, { sender: "ai", text: text }]);
+        
+        setTimeout(() => {
+          setChatHistory(prev => [...prev, { 
+            sender: "ai", 
+            text: "Great! Here are some suggested goals. Click one to select it:",
+            suggestions: true 
+          }]);
+        }, 1000);
+      } else {
+        // Regular response
+        setChatHistory(prev => [...prev, { sender: "ai", text: text }]);
+      }
+    } catch (error) {
+      console.error("Error getting response from Gemini:", error);
+      setChatHistory(prev => [...prev, { 
+        sender: "ai", 
+        text: "I'm sorry, I encountered an error processing your request. Please try again." 
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSelectGoal = (goal) => {
@@ -191,6 +221,15 @@ const AiChat = ({ onClose, onSelectGoal, taskType = null, taskTitle = null }) =>
           </div>
         ))}
         <div ref={messagesEndRef} />
+        
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: "0ms" }}></div>
+            <div className="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: "150ms" }}></div>
+            <div className="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: "300ms" }}></div>
+          </div>
+        )}
       </div>
       
       <form onSubmit={handleSendMessage} className="mt-auto">
@@ -201,10 +240,11 @@ const AiChat = ({ onClose, onSelectGoal, taskType = null, taskTitle = null }) =>
             onChange={(e) => setMessage(e.target.value)}
             className="w-full bg-[#4a295a] bg-opacity-60 rounded-xl py-2 px-4 text-white placeholder-gray-300 focus:outline-none"
             placeholder={taskType ? "Ask for help with this task..." : "Ask Cosa AI about your goals..."}
+            disabled={isLoading}
           />
           <button
             type="submit"
-            disabled={!message.trim()}
+            disabled={!message.trim() || isLoading}
             className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white px-3 py-1 rounded-lg transition-colors"
           >
             Send
