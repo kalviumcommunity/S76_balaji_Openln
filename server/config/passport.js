@@ -1,10 +1,20 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import User from '../models/user.js';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import User from '../models/user.js';
 
-dotenv.config();
+// Get current file directory in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables - explicitly specify path to .env file
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
+// Debug: Log to check if environment variables are loaded
+console.log('Google Client ID:', process.env.GOOGLE_CLIENT_ID ? 'Loaded' : 'Missing');
+console.log('Google Client Secret:', process.env.GOOGLE_CLIENT_SECRET ? 'Loaded' : 'Missing');
 
 // Configure Google Strategy
 passport.use(
@@ -12,13 +22,16 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: '/api/auth/google/callback',
+      callbackURL: process.env.NODE_ENV === 'production' 
+        ? 'https://s76-balaji-openln.onrender.com/api/auth/google/callback'
+        : 'http://localhost:5000/api/auth/google/callback',
       proxy: true
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
         // Check if user already exists
         let user = await User.findOne({ googleId: profile.id });
+        let isNewUser = false;
         
         if (user) {
           // User exists, return the user
@@ -42,11 +55,22 @@ passport.use(
           email: profile.emails[0].value,
           password: Math.random().toString(36).slice(-8), // Random password
           googleId: profile.id,
-          isGoogleUser: true
+          isGoogleUser: true,
+          profileData: {
+            // Initialize with empty profile data that will be filled during onboarding
+            goal: "",
+            timeCommitment: "",
+            learningStyle: ""
+          }
         });
         
-        return done(null, newUser);
+        // Mark this as a new user that needs onboarding
+        newUser.__isNewUser = true;
+        isNewUser = true;
+        
+        return done(null, {...newUser._doc, __isNewUser: isNewUser});
       } catch (error) {
+        console.error("Google auth error:", error);
         return done(error, false);
       }
     }
