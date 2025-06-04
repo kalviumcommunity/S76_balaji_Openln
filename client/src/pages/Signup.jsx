@@ -30,7 +30,7 @@ const Signup = () => {
       setLoading(true);
       setError("");
       
-      const response = await fetch("https://s76-balaji-openln.onrender.com/api/auth/signup", {
+      const response = await fetch("http://localhost:5000/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,6 +62,15 @@ const Signup = () => {
     }
   };
 
+
+const handleGoogleLogin = () => {
+  // Use the appropriate URL based on environment
+  const backendUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://s76-balaji-openln.onrender.com' 
+    : 'http://localhost:5000';
+    
+  window.location.href = `${backendUrl}/api/auth/google`;
+};
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-purple-800">
       <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-10 flex flex-col items-center w-full max-w-sm">
@@ -164,8 +173,8 @@ const Signup = () => {
           <div className="flex-grow border-t border-white/30"></div>
         </div>
         <button
-          disabled={true} // Disable Google signup for now
-          className="flex items-center gap-3 bg-gray-400/40 text-gray-300 font-semibold px-6 py-3 rounded-lg shadow w-full justify-center cursor-not-allowed"
+          onClick={handleGoogleLogin}
+          className="flex items-center gap-3 bg-white/20 text-white font-semibold px-6 py-3 rounded-lg shadow transition-all duration-200 w-full justify-center hover:bg-white/30"
         >
           <svg className="h-6 w-6" viewBox="0 0 48 48">
             <g>
@@ -175,7 +184,7 @@ const Signup = () => {
               <path d="M44.5 20H24v8.5h11.7c-1.1 3.1-4.1 6.5-11.7 6.5-5.6 0-10.2-3.1-12.7-7.6l-6.5 5C7.9 40.2 15.3 44 24 44c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.3-4z" fill="#1976D2"/>
             </g>
           </svg>
-          Google Sign Up (Coming Soon)
+          Sign up with Google
         </button>
         <p className="mt-6 text-gray-300 text-sm">
           Already have an account?{" "}

@@ -14,9 +14,36 @@ const OnboardingGoal = () => {
 	const [showAiChat, setShowAiChat] = useState(false);
 	const navigate = useNavigate();
 
+	// Add this function to save the goal to the backend
+	const saveGoalToBackend = async (goal) => {
+		try {
+			const token = localStorage.getItem("token");
+			if (!token) {
+				navigate("/login");
+				return;
+			}
+
+			await fetch("http://localhost:5000/api/auth/profile", {
+				method: "PUT",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					goal: goal,
+				}),
+				credentials: "include",
+			});
+		} catch (error) {
+			console.error("Error saving goal:", error);
+		}
+	};
+
 	const handleGoalSelect = (goal) => {
-		// Save the selected goal (you could use localStorage, context, or redux)
+		// Save the selected goal to localStorage
 		localStorage.setItem("userGoal", goal);
+		// Also save to backend
+		saveGoalToBackend(goal);
 		// Navigate to the next onboarding step
 		navigate("/onboarding/time-commitment");
 	};
@@ -30,6 +57,8 @@ const OnboardingGoal = () => {
 		if (userGoal.trim()) {
 			// Save the custom goal
 			localStorage.setItem("userGoal", userGoal);
+			// Also save to backend
+			saveGoalToBackend(userGoal);
 			// Navigate to the next onboarding step
 			navigate("/onboarding/time-commitment");
 		}

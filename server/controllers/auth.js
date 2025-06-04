@@ -204,6 +204,9 @@ export const updateProfile = async (req, res) => {
 // Google OAuth callback
 export const googleCallback = (req, res) => {
   try {
+    // Check if this is a new user (created during this authentication)
+    const isNewUser = req.user.__isNewUser || false;
+
     // Generate JWT for the authenticated user
     const token = jwt.sign(
       { id: req.user._id },
@@ -211,8 +214,12 @@ export const googleCallback = (req, res) => {
       { expiresIn: '30d' }
     );
 
-    // Redirect to frontend with token
-    res.redirect(`${process.env.CLIENT_URL}/login?token=${token}`);
+    // Redirect to frontend with token and newUser flag if applicable
+    const redirectUrl = isNewUser 
+      ? `${process.env.CLIENT_URL}/login?token=${token}&newUser=true`
+      : `${process.env.CLIENT_URL}/login?token=${token}`;
+    
+    res.redirect(redirectUrl);
   } catch (error) {
     console.error('Error in Google auth callback:', error);
     res.redirect(`${process.env.CLIENT_URL}/login?error=ServerError`);
