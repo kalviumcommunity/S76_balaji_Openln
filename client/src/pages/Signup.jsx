@@ -30,7 +30,7 @@ const Signup = () => {
       setLoading(true);
       setError("");
       
-      const response = await fetch("http://localhost:5000/api/auth/signup", {
+      const response = await fetch("https://s76-balaji-openln.onrender.com/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
