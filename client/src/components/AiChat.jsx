@@ -28,7 +28,7 @@ const AiChat = ({ onClose, onSelectGoal, taskType = null, taskTitle = null }) =>
             maxOutputTokens: 500,
             temperature: 0.7,
             topP: 0.8,
-            topK: 40,2H^C!W
+            topK: 40,
         text: `Excellent choice! "${goal}" is a great goal. I'll set this as your main goal.` 
       }]);
       
