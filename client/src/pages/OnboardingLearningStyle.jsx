@@ -93,9 +93,40 @@ const OnboardingLearningStyle = () => {
 	const [selectedStyle, setSelectedStyle] = useState(null);
 	const navigate = useNavigate();
 
+	const saveToBackend = async (style) => {
+		try {
+			const token = localStorage.getItem("token");
+			if (!token) {
+				navigate("/login");
+				return;
+			}
+
+			// Use the appropriate URL based on environment
+			const backendUrl =
+				process.env.NODE_ENV === "production"
+					? "https://s76-balaji-openln.onrender.com"
+					: "http://localhost:5000";
+
+			await fetch(`${backendUrl}/api/auth/profile`, {
+				method: "PUT",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					learningStyle: style,
+				}),
+				credentials: "include",
+			});
+		} catch (error) {
+			console.error("Error saving learning style:", error);
+		}
+	};
+
 	const handleStyleSelect = (style) => {
 		// Save the selected learning style
 		localStorage.setItem("learningStyle", style);
+		saveToBackend(style);
 
 		// Navigate to the quiz page (which will be skipable)
 		navigate("/onboarding/quiz");
