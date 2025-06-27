@@ -17,7 +17,7 @@ const app = express();
 
 // Enable CORS
 app.use(cors({
-    origin: ["http://localhost:5173", "https://openln.netlify.app"],
+    origin: ["http://localhost:5173", "https://openln.netlify.app" ,"https://openln.pages.dev"], 
     credentials: true,
 }));
 
