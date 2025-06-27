@@ -41,6 +41,7 @@ export const signup = async (req, res) => {
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
     });
 
@@ -217,6 +218,14 @@ export const login = async (req, res) => {
       });
     }
 
+    // Block login if user is a Google user
+    if (user.isGoogleUser) {
+      return res.status(401).json({
+        success: false,
+        message: 'Please login with Google'
+      });
+    }
+
     // Generate JWT token
     const token = jwt.sign(
       { id: user._id },
@@ -228,6 +237,7 @@ export const login = async (req, res) => {
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
     });
 
@@ -354,6 +364,7 @@ export const googleCallback = (req, res) => {
       maxAge: 60 * 1000, // Short-lived cookie, just for the redirect
       httpOnly: false,    // Readable by client-side JS
       secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     });
 
     // Redirect directly to the appropriate page
