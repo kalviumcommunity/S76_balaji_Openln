@@ -11,9 +11,7 @@ const Login = () => {
   // Function to handle Google Login
   const handleGoogleLogin = () => {
     // Use the appropriate URL based on environment
-    const backendUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://s76-balaji-openln.onrender.com' 
-      : 'http://localhost:5000';
+    const backendUrl ='https://s76-balaji-openln.onrender.com'
       
     window.location.href = `${backendUrl}/api/auth/google`;
   };
@@ -59,7 +57,7 @@ const Login = () => {
       setLoading(true);
       setError("");
       
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch("https://s76-balaji-openln.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

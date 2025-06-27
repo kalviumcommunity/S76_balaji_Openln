@@ -349,10 +349,17 @@ export const googleCallback = (req, res) => {
       { expiresIn: '30d' }
     );
 
-    // Redirect to frontend with token and newUser flag if applicable
+    // Instead of sending the token as query param, embed it in a cookie
+    res.cookie('tempAuthToken', token, {
+      maxAge: 60 * 1000, // Short-lived cookie, just for the redirect
+      httpOnly: false,    // Readable by client-side JS
+      secure: process.env.NODE_ENV === 'production',
+    });
+
+    // Redirect directly to the appropriate page
     const redirectUrl = isNewUser 
-      ? `${process.env.CLIENT_URL}/login?token=${token}&newUser=true`
-      : `${process.env.CLIENT_URL}/login?token=${token}`;
+      ? `${process.env.CLIENT_URL}/onboarding/goal`
+      : `${process.env.CLIENT_URL}/dashboard`;
     
     res.redirect(redirectUrl);
   } catch (error) {
