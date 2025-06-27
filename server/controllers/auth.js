@@ -1,4 +1,5 @@
 import User from '../models/user.js';
+import Roadmap from '../models/roadmap.js';
 import jwt from 'jsonwebtoken';
 
 // @desc    Register new user
@@ -54,6 +55,140 @@ export const signup = async (req, res) => {
         profileData: user.profileData
       }
     });
+
+    // Generate user roadmap (default or based on user goal)
+    const generateUserRoadmap = async (userId, goal, learningStyle) => {
+      try {
+        const user = await User.findById(userId);
+        if (!user) return;
+        
+        // Generate roadmap based on user's goal
+        const roadmapTitle = `Your path to ${goal}`;
+        const roadmapDescription = `A personalized learning journey to help you ${goal.toLowerCase()}`;
+        
+        // Create basic milestone structure based on goal
+        let milestones = [];
+        
+        if (goal === "Starting an Startup") {
+          milestones = [
+            {
+              title: "Business Foundations",
+              description: "Learn the fundamentals of business planning and market research",
+              status: "available", // First milestone is available immediately
+              order: 1,
+              type: "knowledge",
+              requiredSkills: [],
+              unlockConditions: { minimumLevel: 1 },
+              rewards: { 
+                experience: 50,
+                skills: [
+                  { skill: "Business Planning", points: 15 },
+                  { skill: "Market Research", points: 10 }
+                ]
+              },
+              content: {
+                overview: "In this milestone, you'll learn the basics of business planning and how to validate your startup idea.",
+                steps: [
+                  "Understand the business model canvas",
+                  "Learn how to conduct market research",
+                  "Identify your target customers",
+                  "Create a value proposition"
+                ],
+                resources: [
+                  { title: "Business Model Canvas Explained", type: "video" },
+                  { title: "Market Research Fundamentals", type: "article" }
+                ]
+              },
+              estimatedTime: "2-3 weeks",
+              difficulty: 1
+            },
+            {
+              title: "MVP Development",
+              description: "Build your minimum viable product and get early feedback",
+              status: "locked",
+              order: 2,
+              type: "project",
+              unlockConditions: { 
+                minimumLevel: 2
+              },
+              rewards: { 
+                experience: 75,
+                skills: [
+                  { skill: "Product Development", points: 20 },
+                  { skill: "User Testing", points: 15 }
+                ]
+              },
+              content: {
+                overview: "Create a minimal version of your product to test with real users.",
+                steps: [
+                  "Define your MVP features",
+                  "Create a development timeline",
+                  "Build a prototype",
+                  "Test with early adopters"
+                ]
+              },
+              estimatedTime: "4-6 weeks",
+              difficulty: 2
+            },
+            // Additional milestones...
+          ];
+        } 
+        else if (goal === "Full stack Dev") {
+          milestones = [
+            {
+              title: "Frontend Fundamentals",
+              description: "Learn HTML, CSS and JavaScript basics",
+              status: "available",
+              order: 1,
+              type: "knowledge",
+              rewards: { 
+                experience: 50,
+                skills: [
+                  { skill: "HTML/CSS", points: 15 },
+                  { skill: "JavaScript", points: 10 }
+                ]
+              },
+              content: {
+                overview: "Master the building blocks of web development.",
+                steps: [
+                  "Learn HTML structure and semantics",
+                  "Style with CSS and responsive design",
+                  "JavaScript fundamentals and DOM manipulation",
+                  "Build your first interactive webpage"
+                ]
+              },
+              estimatedTime: "3-4 weeks",
+              difficulty: 1
+            },
+            // Additional milestones...
+          ];
+        }
+        // Add more goal-specific roadmaps
+        
+        // Create the roadmap
+        const roadmap = new Roadmap({
+          userId,
+          title: roadmapTitle,
+          description: roadmapDescription,
+          goal,
+          milestones
+        });
+        
+        await roadmap.save();
+        
+        // Link to user
+        user.profileData.roadmapId = roadmap._id;
+        await user.save();
+        
+        return roadmap;
+      } catch (error) {
+        console.error("Error generating roadmap:", error);
+        return null;
+      }
+    };
+
+    // Call this function at the end of the onboarding process
+    // e.g., after user selects their goal and learning style
 
   } catch (error) {
     console.error('Error in signup:', error);
