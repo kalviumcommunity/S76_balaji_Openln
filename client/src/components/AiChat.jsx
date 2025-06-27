@@ -20,20 +20,78 @@ const AiChat = ({ onClose, onSelectGoal, taskType = null, taskTitle = null }) =>
       try {
         // Get the generative model
         modelRef.current = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        
+
         // Start a chat
-        chatRef.current = modelRef.current.startChat({
+        chatRef.current = await modelRef.current.startChat({
           history: [],
           generationConfig: {
             maxOutputTokens: 500,
             temperature: 0.7,
             topP: 0.8,
             topK: 40,
-        text: `Excellent choice! "${goal}" is a great goal. I'll set this as your main goal.` 
-      }]);
+          },
+        });
+      } catch (error) {
+        // Handle initialization error if needed
+        console.error("Failed to initialize Gemini chat:", error);
+      }
+    };
+    initializeGemini();
+  }, []);
+  
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    
+    if (!message.trim()) return;
+    
+    // Add user message to chat history
+    const userMessage = { sender: "user", text: message };
+    setChatHistory((prev) => [...prev, userMessage]);
+    
+    setIsLoading(true);
+    setMessage("");
+    
+    try {
+      // Get AI response
+      const response = await chatRef.current.sendMessage(message);
       
-      // Let parent component know a goal was selected
-      setTimeout(() => onSelectGoal(goal), 1500);
+      // Add AI response to chat history
+      const aiMessage = { sender: "ai", text: response.text };
+      setChatHistory((prev) => [...prev, aiMessage]);
+      
+      // Scroll to bottom
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    } catch (error) {
+      console.error("Error sending message to Gemini:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleSelectGoal = (goal) => {
+    // Send goal selection message
+    const goalMessage = {
+      sender: "user",
+      text: `I want to focus on: ${goal}`,
+    };
+    
+    setChatHistory((prev) => [...prev, goalMessage]);
+    
+    // Simulate AI thinking time
+    setIsLoading(true);
+    setTimeout(() => {
+      // Send AI response with suggestions
+      const aiResponse = {
+        sender: "ai",
+        text: `Great choice! Focusing on "${goal}" is a smart move. Here are some resources to get you started: [link1], [link2], [link3].`,
+        suggestions: true,
+      };
+      
+      setChatHistory((prev) => [...prev, aiResponse]);
+      setIsLoading(false);
+      
+      // Scroll to bottom
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 1000);
   };
 
