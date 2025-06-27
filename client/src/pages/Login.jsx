@@ -74,10 +74,10 @@ const Login = () => {
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
-      
-      // Store token in localStorage
-      localStorage.setItem("token", data.token);
-      
+
+      // No need to store token in localStorage if using cookies
+      // localStorage.setItem("token", data.token);
+
       // Redirect to dashboard
       navigate("/dashboard");
       
