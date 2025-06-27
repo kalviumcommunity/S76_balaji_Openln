@@ -12,9 +12,10 @@ const suggestedGoals = [
 const OnboardingGoal = () => {
 	const [userGoal, setUserGoal] = useState("");
 	const [showAiChat, setShowAiChat] = useState(false);
+	const [isAiMinimized, setIsAiMinimized] = useState(false);
 	const navigate = useNavigate();
 
-	// Add this function to save the goal to the backend
+	// Save goal to backend function
 	const saveGoalToBackend = async (goal) => {
 		try {
 			const token = localStorage.getItem("token");
@@ -23,7 +24,13 @@ const OnboardingGoal = () => {
 				return;
 			}
 
-			await fetch("http://localhost:5000/api/auth/profile", {
+			// Use the appropriate URL based on environment
+			const backendUrl =
+				process.env.NODE_ENV === "production"
+					? "https://s76-balaji-openln.onrender.com"
+					: "http://localhost:5000";
+
+			await fetch(`${backendUrl}/api/auth/profile`, {
 				method: "PUT",
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -66,11 +73,16 @@ const OnboardingGoal = () => {
 
 	const toggleAiChat = () => {
 		setShowAiChat(!showAiChat);
+		setIsAiMinimized(false);
+	};
+
+	const toggleAiMinimize = () => {
+		setIsAiMinimized(!isAiMinimized);
 	};
 
 	return (
 		<div className="min-h-screen w-full flex flex-col md:flex-row bg-black">
-			{/* Left: Progress & Title - Now top section on mobile */}
+			{/* Left side - now top on mobile */}
 			<div className="flex flex-col justify-center items-center py-8 md:py-0 md:flex-1 bg-black relative">
 				<h1 className="text-white text-4xl md:text-[70px] font-bold mb-2 md:mb-4 md:mt-[-80px] leading-none text-center">
 					Onboarding
@@ -89,7 +101,7 @@ const OnboardingGoal = () => {
 				</div>
 			</div>
 
-			{/* Right: Goal Selection or AI Chat - Now bottom section on mobile */}
+			{/* Right side - now bottom on mobile */}
 			<div className="flex-1 bg-gradient-to-br from-[#1a0026] via-[#2d0036] to-[#3a005c] relative pb-10 md:pb-0">
 				<div className="w-full h-full flex flex-col justify-start md:justify-center items-center px-4 md:px-6 pt-8 md:pt-0">
 					<div className="w-full max-w-md">
@@ -99,7 +111,7 @@ const OnboardingGoal = () => {
 									{suggestedGoals.map((goal) => (
 										<button
 											key={goal}
-											className="w-full py-3 px-4 rounded-2xl text-white text-base md:text-lg font-medium bg-[#4a295a] bg-opacity-60 hover:bg-purple-700 transition-colors duration-300"
+											className="w-full py-3 px-4 rounded-2xl text-white text-base md:text-lg font-medium bg-[#4a295a] bg-opacity-60 hover:bg-purple-700 hover:scale-105 transition-all duration-300"
 											onClick={() => handleGoalSelect(goal)}
 										>
 											{goal}
@@ -115,7 +127,7 @@ const OnboardingGoal = () => {
 									<div className="relative">
 										<input
 											type="text"
-											className="w-full bg-[#4a295a] bg-opacity-60 rounded-2xl py-3 px-4 text-white placeholder-gray-300 focus:outline-none text-sm md:text-base"
+											className="w-full bg-[#4a295a] bg-opacity-60 rounded-2xl py-3 px-4 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm md:text-base"
 											placeholder="Type your own goal..."
 											value={userGoal}
 											onChange={handleInputChange}
@@ -130,38 +142,130 @@ const OnboardingGoal = () => {
 									</div>
 								</form>
 
-								<div className="text-center mt-6 md:mt-8">
+								<div className="text-center mt-8 md:mt-10">
 									<button
 										onClick={toggleAiChat}
-										className="text-purple-400 hover:text-purple-300 flex items-center justify-center gap-2 mx-auto text-xs md:text-sm"
+										className="bg-[#4a295a] hover:bg-purple-700 text-white py-3 px-6 rounded-xl flex items-center justify-center gap-2 mx-auto transition-all duration-300 hover:scale-105 shadow-lg"
 									>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
-											className="h-4 w-4 md:h-5 md:w-5"
+											className="h-5 w-5 md:h-6 md:w-6"
 											viewBox="0 0 20 20"
 											fill="currentColor"
 										>
-											<path
-												fillRule="evenodd"
-												d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-												clipRule="evenodd"
-											/>
+											<path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+											<path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
 										</svg>
-										Not sure what to choose? Chat with Cosa AI
+										Ask Cosa AI for Help
 									</button>
+									<p className="text-gray-300 text-xs md:text-sm mt-2">
+										Not sure what goal to pick? Chat with our AI assistant!
+									</p>
 								</div>
 							</>
 						) : (
-							<div className="h-[400px] md:h-[500px] flex flex-col">
-								<AiChat
-									onClose={toggleAiChat}
-									onSelectGoal={handleGoalSelect}
-								/>
+							<div className="relative h-[400px] md:h-[500px] flex flex-col">
+								{isAiMinimized ? (
+									<div
+										className="fixed bottom-6 right-6 bg-purple-700 rounded-full p-3 shadow-lg cursor-pointer hover:scale-110 transition-transform z-50"
+										onClick={toggleAiMinimize}
+									>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											className="h-8 w-8"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="white"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+											/>
+										</svg>
+									</div>
+								) : (
+									<div className="relative w-full h-full rounded-xl shadow-xl overflow-hidden">
+										<div className="absolute top-2 right-2 z-10 flex gap-2">
+											<button
+												onClick={toggleAiMinimize}
+												className="bg-white/20 hover:bg-white/30 rounded-full p-1.5"
+												title="Minimize"
+											>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													className="h-5 w-5"
+													fill="none"
+													viewBox="0 0 24 24"
+													stroke="white"
+												>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														strokeWidth={2}
+														d="M18 12H6"
+													/>
+												</svg>
+											</button>
+											<button
+												onClick={toggleAiChat}
+												className="bg-white/20 hover:bg-white/30 rounded-full p-1.5"
+												title="Close"
+											>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													className="h-5 w-5"
+													fill="none"
+													viewBox="0 0 24 24"
+													stroke="white"
+												>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														strokeWidth={2}
+														d="M6 18L18 6M6 6l12 12"
+													/>
+												</svg>
+											</button>
+										</div>
+										<AiChat
+											onClose={toggleAiChat}
+											onSelectGoal={handleGoalSelect}
+										/>
+									</div>
+								)}
 							</div>
 						)}
 					</div>
 				</div>
 			</div>
+
+			{/* AI suggestion floating button (when not showing chat and not on mobile) */}
+			{!showAiChat && (
+				<div className="hidden md:block fixed bottom-6 right-6">
+					<button
+						onClick={toggleAiChat}
+						className="bg-purple-700 hover:bg-purple-800 text-white p-4 rounded-full shadow-lg hover:scale-110 transition-transform flex items-center justify-center"
+						title="Ask AI for help"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							className="h-6 w-6"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+							/>
+						</svg>
+					</button>
+				</div>
+			)}
 		</div>
 	);
 };

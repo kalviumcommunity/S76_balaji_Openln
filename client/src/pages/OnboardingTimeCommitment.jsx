@@ -1,3 +1,4 @@
+// src/pages/OnboardingTimeCommitment.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,12 +12,47 @@ const timeOptions = [
 const OnboardingTimeCommitment = () => {
   const navigate = useNavigate();
 
+  // Function to save time commitment to backend
+  const saveToBackend = async (timeCommitment) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+      
+      // Use the appropriate URL based on environment
+      const backendUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://s76-balaji-openln.onrender.com' 
+        : 'http://localhost:5000';
+      
+      await fetch(`${backendUrl}/api/auth/profile`, {
+        method: "PUT",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          timeCommitment: timeCommitment
+        }),
+        credentials: "include"
+      });
+    } catch (error) {
+      console.error("Error saving time commitment:", error);
+    }
+  };
+
   const handleTimeSelect = (time) => {
-    // Save the selected time commitment
+    // Save to localStorage
     localStorage.setItem("timeCommitment", time);
-    // Navigate to the next onboarding step (learning style)
+    
+    // Save to backend
+    saveToBackend(time);
+    
+    // Navigate to next step
     navigate("/onboarding/learning-style");
   };
+
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row bg-black">

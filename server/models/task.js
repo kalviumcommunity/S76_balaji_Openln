@@ -18,25 +18,60 @@ const taskSchema = new mongoose.Schema({
         enum: ['pending', 'in-progress', 'completed'],
         default: 'pending'
     },
+    type: {
+        type: String,
+        enum: ['AI Module', 'Coding', 'Reading', 'Project', 'Quiz', 'Writing', 'Practice'],
+        required: true
+    },
+    difficultyLevel: {
+        type: Number,
+        min: 1,
+        max: 5,
+        default: 1
+    },
+    experienceReward: {
+        type: Number,
+        default: 10
+    },
+    skillRewards: [{
+        skill: String,
+        points: Number
+    }],
     deadline: {
         type: Date,
         required: false
     },
-    createdBy: {
-        type: String,
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
-    updatedBy: {
+    content: {
         type: String,
         required: false
+    },
+    quiz: [{
+        question: String,
+        options: [String],
+        answer: String
+    }],
+    generatedBy: {
+        type: String,
+        enum: ['system', 'ai'],
+        default: 'system'
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date
     }
 }, {
-    timestamps: true // Automatically add createdAt and updatedAt fields
+    timestamps: true
 });
 
 // Add index for better query performance
-taskSchema.index({ status: 1, createdAt: -1 });
+taskSchema.index({ status: 1, userId: 1, createdAt: -1 });
 
-const Task = mongoose.model('Task', taskSchema);
-
-export default Task;
+export default mongoose.model('Task', taskSchema);
