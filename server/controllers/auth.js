@@ -361,7 +361,7 @@ export const googleCallback = (req, res) => {
 
     // Instead of sending the token as query param, embed it in a cookie
     res.cookie('tempAuthToken', token, {
-      maxAge: 60 * 1000, // Short-lived cookie, just for the redirect
+      maxAge: 60 * 1000, // Short-lived cookie
       httpOnly: false,    // Readable by client-side JS
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',

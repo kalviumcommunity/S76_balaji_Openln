@@ -19,22 +19,33 @@ const Login = () => {
   // Check if redirected from Google OAuth with token
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    const tokenFromUrl = urlParams.get('token');
     const error = urlParams.get('error');
     const newUser = urlParams.get('newUser');
+    
+    // Get token from cookie
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    
+    const tokenFromCookie = getCookie('tempAuthToken');
+    const token = tokenFromUrl || tokenFromCookie;
     
     if (token) {
       // Store token in localStorage
       localStorage.setItem('token', token);
       
-      // Clean up URL
+      // Clean up URL and cookie
       window.history.replaceState({}, document.title, window.location.pathname);
+      document.cookie = 'tempAuthToken=; Max-Age=0; path=/;';
       
-      // If it's a new user, redirect to onboarding flow
-      if (newUser === 'true') {
+      // Redirect based on user status or current path
+      const path = window.location.pathname;
+      if (newUser === 'true' || path.includes('/onboarding')) {
         navigate('/onboarding/goal');
       } else {
-        // Otherwise, go to dashboard
         navigate('/dashboard');
       }
     } else if (error) {
