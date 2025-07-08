@@ -76,7 +76,7 @@ const Login = () => {
       }
 
       // No need to store token in localStorage if using cookies
-      // localStorage.setItem("token", data.token);
+      localStorage.setItem("token", data.token);
 
       // Redirect to dashboard
       navigate("/dashboard");

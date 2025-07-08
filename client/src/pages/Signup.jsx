@@ -49,8 +49,8 @@ const Signup = () => {
         throw new Error(data.message || "Signup failed");
       }
 
-      // No need to store token in localStorage if using cookies
-      // localStorage.setItem("token", data.token);
+      // Store the token in localStorage
+      localStorage.setItem("token", data.token);
 
       // Redirect to onboarding page
       navigate("/onboarding/goal");
