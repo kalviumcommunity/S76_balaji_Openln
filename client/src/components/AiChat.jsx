@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Initialize the Gemini AI
 // You should store this key in an environment variable in a real application
-const API_KEY = "AIzaSyCAbNEZsHxmKKRBmyEMRV8Qoie8j-_m_xQ"; 
+const API_KEY = import.meta.env.AI_API_KEY; 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 const AiChat = ({ onClose, onSelectGoal, taskType = null, taskTitle = null }) => {
