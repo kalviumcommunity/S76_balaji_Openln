@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { getBackendUrl } from "../utils/api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,18 +11,17 @@ const Login = () => {
 
   // Function to handle Google Login
   const handleGoogleLogin = () => {
-    // Use the appropriate URL based on environment
-    const backendUrl ='https://s76-balaji-openln.onrender.com'
-      
+    const backendUrl = getBackendUrl();
     window.location.href = `${backendUrl}/api/auth/google`;
   };
   
-  // Check if redirected from Google OAuth with token
+  // Check for authentication on component mount
   useEffect(() => {
+    // Check for tokens from authentication redirects
     const urlParams = new URLSearchParams(window.location.search);
-    const tokenFromUrl = urlParams.get('token');
-    const error = urlParams.get('error');
+    const authSuccess = urlParams.get('authSuccess');
     const newUser = urlParams.get('newUser');
+    const error = urlParams.get('error');
     
     // Get token from cookie
     function getCookie(name) {
@@ -31,26 +31,23 @@ const Login = () => {
     }
     
     const tokenFromCookie = getCookie('tempAuthToken');
-    const token = tokenFromUrl || tokenFromCookie;
     
-    if (token) {
+    if (authSuccess === 'true' && tokenFromCookie) {
       // Store token in localStorage
-      localStorage.setItem('token', token);
+      localStorage.setItem('token', tokenFromCookie);
       
       // Clean up URL and cookie
       window.history.replaceState({}, document.title, window.location.pathname);
       document.cookie = 'tempAuthToken=; Max-Age=0; path=/;';
       
-      // Redirect based on user status or current path
-      const path = window.location.pathname;
-      if (newUser === 'true' || path.includes('/onboarding')) {
+      // Redirect based on user status
+      if (newUser === 'true') {
         navigate('/onboarding/goal');
       } else {
         navigate('/dashboard');
       }
     } else if (error) {
-      setError(error);
-      // Clean up URL
+      setError(error === 'ServerError' ? 'Authentication server error' : error);
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [navigate]);
@@ -68,7 +65,8 @@ const Login = () => {
       setLoading(true);
       setError("");
       
-      const response = await fetch("https://s76-balaji-openln.onrender.com/api/auth/login", {
+      const backendUrl = getBackendUrl();
+      const response = await fetch(`${backendUrl}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +75,7 @@ const Login = () => {
           email,
           password
         }),
-        credentials: "include"
+        credentials: "include" // Important: include cookies in request
       });
       
       const data = await response.json();
@@ -86,7 +84,7 @@ const Login = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      // No need to store token in localStorage if using cookies
+      // Store token in localStorage for client-side auth checks
       localStorage.setItem("token", data.token);
 
       // Redirect to dashboard
