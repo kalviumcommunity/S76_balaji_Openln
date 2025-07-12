@@ -359,7 +359,16 @@ export const googleCallback = (req, res) => {
       { expiresIn: '30d' }
     );
 
-    // Instead of sending the token as query param, embed it in a cookie
+    // Set HTTP-only cookie - same as regular login
+    res.cookie('jwt', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+    });
+
+    // Also set a temporary cookie for client-side redirect handling
+    // This is needed because we're using a redirect flow
     res.cookie('tempAuthToken', token, {
       maxAge: 60 * 1000, // Short-lived cookie
       httpOnly: false,    // Readable by client-side JS
@@ -367,10 +376,8 @@ export const googleCallback = (req, res) => {
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     });
 
-    // Redirect directly to the appropriate page
-    const redirectUrl = isNewUser 
-      ? `${process.env.CLIENT_URL}/onboarding/goal`
-      : `${process.env.CLIENT_URL}/dashboard`;
+    // Include isNewUser flag in redirect URL to handle proper redirects on client side
+    const redirectUrl = `${process.env.CLIENT_URL}/login?authSuccess=true&newUser=${isNewUser}`;
     
     res.redirect(redirectUrl);
   } catch (error) {
