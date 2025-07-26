@@ -1,72 +1,60 @@
-# Open ln
-[![Netlify Status](https://api.netlify.com/api/v1/badges/63308681-bf23-46f0-ba25-36449d2328a9/deploy-status)](https://app.netlify.com/sites/openln/deploys)
-## 🎯 Project Title:
-Open ln: An AI-Driven Personalized Learning & Goal Tracking System
-
-## 💡 Project Idea:
-Open ln is an AI-powered personalized learning platform that acts like a SoloLeveling-style mentor, guiding users from their current knowledge level to mastery — no matter what goal they set (e.g., getting a ₹12 LPA job, becoming a better speaker, learning design, etc.). It adapts based on users' time, learning style, and current level. The platform offers dynamic learning paths, personalized daily challenges (coding tasks, reading, or projects), and tracks progress with ranks from E to S.
-
-Every user starts with a goal, and the AI generates a personalized roadmap with awareness training, skill assessments, and daily missions. Feedback is given after each task, and AI monitors GitHub activity, task submissions, and learning logs to level up the user.
-
-## 🧩 Tech Stack:
-
-- Frontend: React.js + Tailwind CSS
-- Backend: Node.js + Express.js
-- AI: Gemini API (Google AI)
-- Auth: Google OAuth
-- Database: MongoDB Atlas
-- Deployment: CloudFlare (Frontend), Render (Backend)
+> 🚀 This project was the **initial prototype** of the Openln Engine. It has now evolved into a full-fledged open-source organization: [Openln](https://github.com/openln-git).
 
 ---
 
-## 🗓️ Day-by-Day Plan
+## 🧠 What is Openln Engine?
 
-### 🧠 Day 1: Research + Low-Fidelity Design
-- Think through the user experience like a solo leveling RPG
-- Define user flow: onboarding → goal → AI roadmap → daily missions
-- Create a rough wireframe in Figma for:
-  - Landing page
-  - Goal selection page
-  - Daily Task page
-  - Dashboard with progress & rank
+Openln Engine is the **core learning engine** of the Openln ecosystem. It helps learners:
 
-### 🎨 Day 2: High-Fidelity Design - Part 1
-- Build detailed designs in Figma for:
-  - Home / Welcome page
-  - Goal selection wizard
-  - Rank system interface (E to S)
-  - Daily Task Detail Page
+- Set a **goal** (e.g., "Become a Frontend Developer", "Crack FAANG Interview").
+- Get a **realistic roadmap** with daily tasks and weekly milestones.
+- Track progress and **level up** as they complete challenges.
 
-### 🎨 Day 3: High-Fidelity Design - Part 2
-- Finish designing:
-  - Dashboard
-  - Task Completion flow
-  - AI-generated feedback display
-  - Voice recording page
+This prototype was developed to validate the idea of **goal-based learning** with personalized growth tracking.
 
-### 🛠️ Day 4: Frontend Setup
-- Set up React project with Tailwind
-- Build Home, Goal Selection, and Dashboard pages
-- Create reusable components (Card, Button, RankTag, TaskCard)
-
-
-### 🧠 Day 5: Backend & Database
-- Setup Node.js + Express server
-- Define routes
-  
-### 🧼 Day 6: Final Touches + Deploy
-- Polish UI/UX with animations and hover effects
-- Deploy frontend on cloudflare, backend on Render
-- Test full flow.
-  
 ---
 
-# Deployed link:
+## 🏗️ Status
 
-## backend:
+- ✅ Core learning structure implemented
+- ✅ Task generation and roadmap logic functional
+- 🔁 Currently being **rewritten and modularized** in the official Openln repository:
+  👉 https://github.com/openln-git/openln-engine
 
-https://s76-balaji-openln.onrender.com
+---
 
-## Frontend:
+## 📦 Tech Stack
 
-https://openln.netlify.app/
+- Backend: Node.js, Express.js
+- Database: MongoDB (Mongoose)
+- Frontend: React.js,TS
+- Others: Tailwind CSS, JWT Auth
+
+---
+
+## 📍 Archive Notice
+
+> This repo is no longer actively maintained here.  
+> 👉 Please refer to [Openln GitHub Org](https://github.com/openln-git) for the latest version, documentation, and contributor information.
+
+---
+
+## 🙋 Maintainer
+
+**Balaji R (RKB)**  
+Founder & Lead Developer, Openln  
+GitHub: [@balajirkb](https://github.com/balajirkb)  
+LinkedIn: [linkedin.com/in/balaji-rkb](https://www.linkedin.com/in/balaji-rkb)
+
+---
+
+## 💬 License
+
+This codebase was released under the **Apache 2.0 License** for learning and prototyping purposes.
+
+---
+
+
+
+You're welcome to contribute to the **Openln** now!
+
